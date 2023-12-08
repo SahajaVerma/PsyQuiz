@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!--In the balcony, Smoking with tea. It's 6 December, 2023, Wednesday; 02:20pm and I'm giving instructions to ChatGPT to write a code for me for PsyQuiz SPA-->
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sample Quiz</title>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .quiz-container {
+      max-width: 600px;
+      margin: 10% auto;
+      padding: 5%;
+    }
+
+    .question {
+      background-color: #f7f7f7;
+      border-radius: 25px;
+      padding: 5%;
+      margin-bottom: 10%;
+      text-align: justify;
+    }
+
+    .question p {
+      font-size: 14px;
+      font-weight: 600;
+      color: #292929;
+      margin-bottom: 10px;
+    }
+
+    .question-number {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      background-color: #F33A6A;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 30px;
+      font-size: 12pt;
+      font-weight: 400;
+      color: #ffffff;
+      margin-right: 10px;
+    }
+
+    .options {
+      list-style: none;
+      padding: 0;
+    }
+
+    .option {
+      font-size: 13pt;
+      font-weight: 500;
+      color: #545454;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+    }
+
+    .option input {
+      margin-right: 10px;
+      appearance: none;
+      border: 2px solid #5c5c5c;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .option input:checked {
+      background-color: #0dbf87;
+      border-color: #0dbf87;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    button {
+      font-size: 14pt;
+      font-weight: 500;
+      padding: 10%;
+      border-radius: 25px;
+      cursor: pointer;
+      background-color: #0dbf87;
+      color: #ffffff;
+      border: none;
+      outline: none;
+      margin-top: 20px;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 4px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 5px;
+    }
+
+    .green {
+      background-color: #0dbf87;
+    }
+
+    .red {
+      background-color: #ff5c5c;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Sample Quiz</h1>
+    <div id="quiz"></div>
+    <button onclick="calculateScore()">Submit Quiz</button>
+    <div id="result"></div>
+    <table id="responseTable"></table>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "According to Abraham Maslow's hierarchy of needs, which needs are considered higher-level or growth needs?",
+        options: ['Physiological needs', 'Safety needs', 'Esteem needs', 'Belongingness needs'],
+        correctAnswer: 2
+      },
+      {
+        question: "Who is associated with the concept of the 'cognitive revolution' and emphasized the importance of mental processes in psychology?",
+        options: ['John Watson', 'B.F. Skinner', 'Ulric Neisser', 'William James'],
+        correctAnswer: 2
+      },
+      {
+        question: "What does Albert Ellis's ABC model in cognitive-behavioral therapy (CBT) stand for?",
+        options: ['Affective, Behavioral, Cognitive', 'Assessment, Belief, Consequence', 'Activating event, Belief, Consequence', 'Attitude, Behavior, Coping'],
+        correctAnswer: 2
+      },
+      {
+        question: "In the context of motivation, what does Maslow's hierarchy of needs propose?",
+        options: ['Motivation is primarily driven by external rewards', 'Motivation is based on the pursuit of pleasure', 'Motivation is structured in a hierarchy, starting with basic needs and progressing to higher-level needs', 'Motivation is solely influenced by biological factors'],
+        correctAnswer: 2
+      },
+      {
+        question: 'Who is known for the classical conditioning theory in the field of learning?',
+        options: ['B.F. Skinner', 'Albert Bandura', 'Ivan Pavlov', 'Abraham Maslow'],
+        correctAnswer: 2
+      },
+      {
+        question: 'What type of memory is responsible for storing information for a brief period, typically lasting a few seconds to a minute?',
+        options: ['Long-term memory', 'Sensory memory', 'Working memory', 'Short-term memory'],
+        correctAnswer: 3
+      },
+      {
+        question: 'Which pioneer in psychology is associated with the concept of the collective unconscious?',
+        options: ['John B. Watson', 'Carl Rogers', 'Carl Jung', 'William James'],
+        correctAnswer: 2
+      },
+      {
+        question: "According to Albert Bandura's social cognitive theory, what plays a crucial role in the learning process?",
+        options: ['Classical conditioning', 'Observational learning', 'Operant conditioning', 'Insight learning'],
+        correctAnswer: 1
+      },
+      {
+        question: 'Who is considered the father of modern psychology and established the first psychology laboratory?',
+        options: ['B.F. Skinner', 'Wilhelm Wundt', 'John Dewey', 'Erik Erikson'],
+        correctAnswer: 1
+      },
+      {
+        question: "What is the primary focus of Erik Erikson's psychosocial theory of development?",
+        options: ['Cognitive development stages', 'Physical development milestones', 'Social and emotional development across the lifespan', 'Moral development stages'],
+        correctAnswer: 2
+      }
+    ];
+
+    function loadQuiz() {
+      const quizElement = document.getElementById('quiz');
+      quizData.forEach((data, index) => {
+        const questionElement = document.createElement('div');
+        questionElement.classList.add('question');
+        questionElement.innerHTML = `
+          <span class="question-number">${index + 1}</span>
+          <p>${data.question}</p>
+          <ul class="options"></ul>
+        `;
+
+        const optionsElement = questionElement.querySelector('.options');
+        data.options.forEach((option, optionIndex) => {
+          const optionElement = document.createElement('li');
+          optionElement.classList.add('option');
+          optionElement.innerHTML = `
+            <label>
+              <input type="radio" name="q${index}" value="${optionIndex}">
+              ${option}
+            </label>
+          `;
+          optionsElement.appendChild(optionElement);
+        });
+
+        quizElement.appendChild(questionElement);
+      });
+    }
+
+    function calculateScore() {
+      const quizElements = document.querySelectorAll('.question');
+      let score = 0;
+
+      quizElements.forEach((questionElement, index) => {
+        const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
+        if (selectedOption) {
+          if (parseInt(selectedOption.value) === quizData[index].correctAnswer) {
+            score += 4; // Correct answer
+          } else {
+            score -= 1; // Incorrect answer
+          }
+        }
+      });
+
+      const resultElement = document.getElementById('result');
+      resultElement.textContent = `Your Score: ${score}/${quizData.length}`;
+
+      displayResponses(score);
+    }
+
+    function displayResponses(score) {
+      const tableElement = document.getElementById('responseTable');
+      tableElement.innerHTML = '';
+
+      quizData.forEach((data, index) => {
+        const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
+        const responseCell = document.createElement('td');
+        const dotElement = document.createElement('div');
+        dotElement.classList.add('dot');
+
+        if (selectedOption && parseInt(selectedOption.value) === data.correctAnswer) {
+          dotElement.classList.add('green');
+        } else {
+          dotElement.classList.add('red');
+        }
+
+        responseCell.appendChild(dotElement);
+
+        const questionNumberCell = document.createElement('th');
+        questionNumberCell.textContent = `#${index + 1}`;
+
+        const responseRow = document.createElement('tr');
+        responseRow.appendChild(questionNumberCell);
+        responseRow.appendChild(responseCell);
+
+        tableElement.appendChild(responseRow);
+      });
+    }
+
+    window.onload = loadQuiz;
+  </script>
+</body>
+</html>
